@@ -1,0 +1,41 @@
+services:
+  backend:
+    build: ./tms_backend
+    container_name: tms-backend-container
+    ports:
+      - "${BACKEND_PORT_NUMBER}:${BACKEND_PORT_NUMBER}"
+    volumes:
+      - ./tms_backend:/app
+    env_file:
+      - ./tms_backend/.env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+    depends_on:
+      - ${POSTGRES_HOST}
+  frontend:
+    build: ./tms_frontend
+    container_name: tms-frontend-container
+    ports:
+      - "${FRONTEND_PORT_NUMBER}:${FRONTEND_PORT_NUMBER}"
+    volumes:
+      - ./tms_frontend:/app
+      - /app/node_modules
+    env_file:
+      - ./tms_frontend/.env
+
+  database:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+volumes:
+  postgres_data:

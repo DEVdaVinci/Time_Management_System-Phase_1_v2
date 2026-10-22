@@ -23,7 +23,7 @@ class Category(models.Model):
     version_number_major = models.IntegerField(default=1)
     version_number_minor = models.IntegerField(default=0)
     date_created = models.DateTimeField(auto_now_add=True)
-    date_updated = models.DateTimeField(auto_now=True)
+    date_modified = models.DateTimeField(auto_now=True)
     superior = models.ForeignKey("self", related_name="subordinates", on_delete=models.PROTECT, blank=True, null=True)
     superiors_additional = models.ForeignKey("self", related_name="subordinates_additional", on_delete=models.DO_NOTHING, blank=True, null=True)
     is_root = models.BooleanField(default=False)
@@ -59,7 +59,7 @@ class Tag(models.Model):
     version_number_minor = models.IntegerField(default=0)
     superiors = models.ManyToManyField("self", blank=True, symmetrical=False, related_name="subordinates")
     date_created = models.DateTimeField(auto_now_add=True)
-    date_updated = models.DateTimeField(auto_now=True)
+    date_modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
@@ -79,7 +79,7 @@ class Action (models.Model):
     tags = models.ManyToManyField(Tag, blank=True)
     
     date_created = models.DateTimeField(auto_now_add=True)
-    date_updated = models.DateTimeField(auto_now=True)
+    date_modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
@@ -89,19 +89,18 @@ class Action (models.Model):
 class Activity(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid7, editable=False)
     name = models.CharField(max_length=100)
-    description = models.TextField(blank=True, null=False)
+    description = models.TextField()
     previous_version = models.ForeignKey("self", on_delete=models.PROTECT, blank=True, null=True, related_name="future_version")
     version_number_major = models.IntegerField(default=1)
     version_number_minor = models.IntegerField(default=0)
 
-    actions = models.ManyToManyField(Action)
-
+    
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, blank=True, null=True, related_name="activities")
     categories_additional = models.ManyToManyField(Category, blank=True, related_name="activities_additional")
     tags = models.ManyToManyField(Tag, blank=True)
 
     date_created = models.DateTimeField(auto_now_add=True)
-    date_updated = models.DateTimeField(auto_now=True)
+    date_modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
@@ -120,15 +119,16 @@ class Task(models.Model):
         ("CANCELED", "Canceled"),
     )
     id = models.UUIDField(primary_key=True, default=uuid.uuid7, editable=False)
+    account = models.OneToOneField(Account, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=False)
     previous_version = models.ForeignKey("self", on_delete=models.PROTECT, blank=True, null=True, related_name="future_version")
     version_number_major = models.IntegerField(default=1)
     version_number_minor = models.IntegerField(default=0)
-    #user = models.OneToOneField()
+    
 
     activity = models.ForeignKey(Activity, on_delete=models.PROTECT)
-    additional_actions = models.ManyToManyField(Action, blank=True)
+    actions = models.ManyToManyField(Action, blank=True)
     status = models.CharField(choices=STATUS, max_length=25, default="NOT_STARTED")
     
 
@@ -137,7 +137,7 @@ class Task(models.Model):
     tags = models.ManyToManyField(Tag, blank=True)
 
     date_created = models.DateTimeField(auto_now_add=True)
-    date_updated = models.DateTimeField(auto_now=True)
+    date_modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name

@@ -1,3 +1,7 @@
+
+export type ModelNames = "user" | "account" | "category" | "tag" | "action" | "activity" | "task";
+
+//------------------------------------------------------------------------------------------------------
 //Model Types
 export interface User{
     id: string
@@ -19,18 +23,6 @@ export interface Account{
 }
 
 
-export type UserWrite = Omit<User, "date_created" | "date_modified" | "id"> & {id?: string};
-export type UserReadShallow = User;
-export type UserReadDeep = UserReadShallow;
-
-export type AccountWrite = Omit<Account, "date_created" | "date_modified" | "id" | "user"> & {id?: string, user: UserWrite};
-export type AccountReadShallow = Account;
-export type AccountReadDeep = 
-    Omit<Account, "user"> 
-    &
-    {
-        user: UserReadShallow
-    };
 
 
 export interface Category{
@@ -127,6 +119,25 @@ export interface Task{
     status: string
 }
 
+
+
+export type UserWrite = Omit<User, "date_created" | "date_modified" | "id"> & {id?: string};
+export type UserReadShallow = User;
+export type UserReadDeep = UserReadShallow;
+
+export type AccountWrite = Omit<Account, "date_created" | "date_modified" | "id" | "user"> & {id?: string, user: UserWrite};
+export type AccountReadShallow = Account;
+export type AccountReadDeep = 
+    Omit<Account, "user"> 
+    &
+    {
+        user: UserReadShallow
+    };
+
+export type LogIn = Pick<User, "username" | "password">
+export type Register_User = Omit<UserWrite, "password"> & {password1: string, password2: string}
+export type Register_Account = Omit<AccountWrite, "user"> & {user: Register_User}
+
 export type CategoryWrite = Omit<Category, "date_created" | "date_modified" | "id"> & {id?: string};
 export type CategoryReadShallow = Category;
 export type CategoryReadDeep = 
@@ -187,7 +198,32 @@ export type TaskReadDeep =
         account: AccountReadShallow,
         activity: ActivityReadShallow,
     };
-//Form
+
+//--------------------------------------------
+
+export type ModelType<write, readShallow, readDeep> = {
+    write: write,
+    read_shallow: readShallow,
+    read_deep: readDeep
+}
+
+export type ModelMap = {
+    user: ModelType<UserWrite, UserReadShallow, UserReadDeep>;
+    account: ModelType<AccountWrite, AccountReadShallow, AccountReadDeep>;
+    category: ModelType<CategoryWrite, CategoryReadShallow, CategoryReadDeep>;
+    tag: ModelType<TagWrite, TagReadShallow, TagReadDeep>;
+    action: ModelType<ActionWrite, ActionReadShallow, ActionReadDeep>;
+    activity: ModelType<ActivityWrite, ActivityReadShallow, ActivityReadDeep>;
+    task: ModelType<TaskWrite, TaskReadShallow, TaskReadDeep>;
+};
+
+export type WriteRequest<M extends ModelNames> = ModelMap[M]["write"];
+export type ReadResponse_Shallow<M extends ModelNames> = ModelMap[M]["read_shallow"];
+export type ReadResponse_Deep<M extends ModelNames> = ModelMap[M]["read_deep"];
+//============================================================================
+//[Form]
+
+
 
 //[API]
 

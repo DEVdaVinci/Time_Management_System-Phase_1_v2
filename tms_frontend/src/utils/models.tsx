@@ -37,7 +37,7 @@ export interface Category{
 
     superior: string
     superiors_additional: string
-    is_root: Boolean
+    is_root: boolean
 }
 
 
@@ -220,12 +220,276 @@ export type ModelMap = {
 export type WriteRequest<M extends ModelNames> = ModelMap[M]["write"];
 export type ReadResponse_Shallow<M extends ModelNames> = ModelMap[M]["read_shallow"];
 export type ReadResponse_Deep<M extends ModelNames> = ModelMap[M]["read_deep"];
-//============================================================================
+//==================================================================================================
 //[Form]
 
 
+//types of fields = checkbox/boolean, text, text area, integer, single select, multiselect, ...
 
+
+//form field = any of the varients of fields
+
+//form = array of form fields
+
+
+
+/*
+name
+
+label class
+for???
+
+type
+input class
+id???
+*/
+type GeneralFormTypes =  "text" | "checkbox" | "number" | "email" | "password" | "text-area";
+interface FormFieldBase {
+    name: string;
+}
+interface FormFieldGeneral extends FormFieldBase {
+    fieldType: GeneralFormTypes,
+}
+interface FormFieldTextarea extends FormFieldBase {
+    fieldType: "text-area",
+    rows: number;
+}
+interface FormFieldConnection extends FormFieldBase {
+    fieldType: "connection",
+    connection: ModelNames; //this is the name of the model at the other end of this connection
+    multiple: boolean;
+}
+type FormField = FormFieldGeneral | FormFieldTextarea | FormFieldConnection;
+//text
+
+//text area
+
+//email
+
+//password
+
+//number
+
+//checkbox
+
+//single select
+
+//multiselect
+
+interface FormConfig {
+    fields: FormField[]
+}
+
+//==================================================================================================
 //[API]
 
 
+
+//==================================================================================================
 //[model info]
+
+
+class ModelInfo {
+    name: ModelNames;
+    name_plural: string;
+    form: FormConfig;
+
+    public constructor(name:ModelNames, name_plural:string, fields: FormField[])
+    {
+        this.name = name;
+        this.name_plural = name_plural;
+        this.form = {fields: []}
+
+        if(name in ["user", "account"])
+        {
+            this.form = {fields: []}
+        }
+        else 
+        {
+            this.form = {
+                fields: [
+                    {
+                        name: "name",
+                        fieldType: "text",
+                    },
+                    {
+                        name: "description",
+                        fieldType: "text-area",
+                        rows: 5,
+                    },
+                    {
+                        name: "previous_version",
+                        fieldType: "connection",
+                        connection: this.name,
+                        multiple: false,
+                    },
+                    {
+                        name: "version_number_major",
+                        fieldType: "number",
+                    },
+                    {
+                        name: "version_number_minor",
+                        fieldType: "number",
+                    },
+                    
+                ]
+            }
+        }
+
+        this.form.fields.push(...fields)
+    }
+}
+
+export const models: Record<ModelNames, ModelInfo> = {
+    user: new ModelInfo("user", "users", [
+        {
+            name: "username",
+            fieldType: "text",
+        },
+        {
+            name: "password",
+            fieldType: "password",
+        },
+        {
+            name: "email",
+            fieldType: "email",
+        },
+        
+    ]),
+    account: new ModelInfo("account", "accounts", [
+        {
+            name: "user",
+            fieldType: "connection",
+            connection: "user",
+            multiple: false,
+        },
+        {
+            name: "first_name",
+            fieldType: "text",
+        },
+        {
+            name: "last_name",
+            fieldType: "text",
+        },
+        {
+            name: "date_of_birth",
+            fieldType: "text",
+        },
+        
+    ]),
+    category: new ModelInfo("category", "categories", [
+        {
+            name: "is_root",
+            fieldType: "checkbox",
+        },
+        {
+            name: "superior",
+            fieldType: "connection",
+            connection: "category",
+            multiple: false,
+        },
+        {
+            name: "superiors_additional",
+            fieldType: "connection",
+            connection: "category",
+            multiple: true,
+        },
+    ]),
+    tag: new ModelInfo("tag", "tags", [
+        {
+            name: "superiors",
+            fieldType: "connection",
+            connection: "tag",
+            multiple: true,
+        },
+    ]),
+    action: new ModelInfo("action", "actions", [
+        {
+            name: "category",
+            fieldType: "connection",
+            connection: "category",
+            multiple: false,
+        },
+        {
+            name: "categories_additional",
+            fieldType: "connection",
+            connection: "category",
+            multiple: true,
+        },
+        {
+            name: "tags",
+            fieldType: "connection",
+            connection: "tag",
+            multiple: true,
+        },
+    ]),
+    activity: new ModelInfo("activity", "activities", [
+        {
+            name: "actions",
+            fieldType: "connection",
+            connection: "action",
+            multiple: true,
+        },
+        {
+            name: "category",
+            fieldType: "connection",
+            connection: "category",
+            multiple: false,
+        },
+        {
+            name: "categories_additional",
+            fieldType: "connection",
+            connection: "category",
+            multiple: true,
+        },
+        {
+            name: "tags",
+            fieldType: "connection",
+            connection: "tag",
+            multiple: true,
+        },
+    ]),
+    task: new ModelInfo("task", "tasks", [
+        {
+            name: "actions",
+            fieldType: "connection",
+            connection: "action",
+            multiple: true,
+        },
+        {
+            name: "category",
+            fieldType: "connection",
+            connection: "category",
+            multiple: false,
+        },
+        {
+            name: "categories_additional",
+            fieldType: "connection",
+            connection: "category",
+            multiple: true,
+        },
+        {
+            name: "tags",
+            fieldType: "connection",
+            connection: "tag",
+            multiple: true,
+        },
+        {
+            name: "account",
+            fieldType: "connection",
+            connection: "account",
+            multiple: false,
+        },
+        {
+            name: "activity",
+            fieldType: "connection",
+            connection: "activity",
+            multiple: false,
+        },
+        {
+            name: "status",
+            fieldType: "text",
+        },
+    ]),
+
+}

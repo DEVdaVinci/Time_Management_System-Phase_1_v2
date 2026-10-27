@@ -1,6 +1,7 @@
 import React from 'react'
 import { useNavigate } from "react-router";
-
+import type { ModelNames } from '../utils/models'
+import {model_names} from '../utils/models'
 
 function Homepage() {
 
@@ -8,10 +9,10 @@ function Homepage() {
 
   return (
     <>
-        <button type="button" className="btn btn-primary" onClick={() => {
-            navigate("/categories");}}> Categories</button>
-         <button type="button" className="btn btn-primary" onClick={() => {
-            navigate("/tags");}}> Tag</button>
+      {model_names.map((model_name) => {
+        return <button type="button" className="btn btn-primary" onClick={() => {
+            navigate(`/list/${model_name}`);}}> {model_name} </button>
+      })}
     </>
   )
 }

@@ -1,6 +1,8 @@
 
-export type ModelNames = "user" | "account" | "category" | "tag" | "action" | "activity" | "task";
+//export type ModelNames = "user" | "account" | "category" | "tag" | "action" | "activity" | "task";
 
+export const model_names = ["user", "account", "category", "tag", "action", "activity", "task"] as const;
+export type ModelNames = typeof model_names[number]
 //------------------------------------------------------------------------------------------------------
 //Model Types
 export interface User{

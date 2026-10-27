@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import type { ModelNames, ReadResponse_Shallow } from '../utils/models'
+import type { ModelNames, ReadResponse_Shallow, UserWrite } from '../utils/models'
 import { ListRequest } from '../utils/apiRequests';
 import { useNavigate } from "react-router";
 
@@ -8,14 +8,16 @@ type ListPageProps<M extends ModelNames> = {
 };
 
 function ListPage<M extends ModelNames>({model_name}:ListPageProps<M>) {
-    const [objects, setObjects] = useState<ReadResponse_Shallow<M>>([])
+    const [objects, setObjects] = useState<ReadResponse_Shallow<M>[]>([])
 
     const navigate = useNavigate();
 
 
     useEffect(() => {
        console.log("[ListPage] Start")
-       ListRequest(model_name).then((data)=>{setObjects(data)})
+       ListRequest(model_name).then((data)=>{
+        setObjects(data)
+    })
     }, [])
     
     
@@ -23,8 +25,14 @@ function ListPage<M extends ModelNames>({model_name}:ListPageProps<M>) {
     <>
         <div>List {model_name}s Page</div>
         {objects.map((object: ReadResponse_Shallow<M>) => {
+            let title = ""
+            try {
+                title = object.name
+            } catch (error) {
+             title = object.username   
+            }
             return <button type="button" className="btn btn-primary" onClick={() => {
-                navigate(`/read/${model_name}`);}}> {object.name} </button>
+                navigate(`/read/${model_name}`);}}> {title} </button>
             })}
     </>
     )

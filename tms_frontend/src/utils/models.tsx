@@ -249,19 +249,19 @@ type GeneralFormTypes =  "text" | "checkbox" | "number" | "email" | "password" |
 interface FormFieldBase {
     name: string;
 }
-interface FormFieldGeneral extends FormFieldBase {
+export interface FormFieldGeneral extends FormFieldBase {
     fieldType: GeneralFormTypes,
 }
-interface FormFieldTextarea extends FormFieldBase {
+export interface FormFieldTextarea extends FormFieldBase {
     fieldType: "text-area",
     rows: number;
 }
-interface FormFieldConnection extends FormFieldBase {
+export interface FormFieldConnection extends FormFieldBase {
     fieldType: "connection",
     connection: ModelNames; //this is the name of the model at the other end of this connection
     multiple: boolean;
 }
-type FormField = FormFieldGeneral | FormFieldTextarea | FormFieldConnection;
+export type FormField = FormFieldGeneral | FormFieldTextarea | FormFieldConnection;
 //text
 
 //text area
@@ -278,7 +278,7 @@ type FormField = FormFieldGeneral | FormFieldTextarea | FormFieldConnection;
 
 //multiselect
 
-interface FormConfig {
+export interface FormConfig {
     fields: FormField[]
 }
 
@@ -291,7 +291,7 @@ interface FormConfig {
 //[model info]
 
 
-class ModelInfo {
+export class ModelInfo {
     name: ModelNames;
     name_plural: string;
     form: FormConfig;

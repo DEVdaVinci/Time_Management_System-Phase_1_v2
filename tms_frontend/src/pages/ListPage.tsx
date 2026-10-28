@@ -26,11 +26,14 @@ function ListPage<M extends ModelNames>({model_name}:ListPageProps<M>) {
         <div>List {model_name}s Page</div>
         {objects.map((object: ReadResponse_Shallow<M>) => {
             let title = ""
-            try {
+            if("name" in object)
                 title = object.name
-            } catch (error) {
-             title = object.username   
-            }
+            else if(("username" in object))
+                title = object.username
+            else
+                throw new Error(`[ListPage.tsx] Object is of improper type! It should have a name or username variable but neither were found. type: ${typeof object} Object: ${object}`);
+                
+            
             return <button type="button" className="btn btn-primary" onClick={() => {
                 navigate(`/read/${model_name}`);}}> {title} </button>
             })}

@@ -6,7 +6,7 @@ type CreatePageProps<M extends ModelNames> = {
     model_name: M,
 }
 
-function CreatePage<M extends ModelNames>({model_name, id}: CreatePageProps<M>) {
+function CreatePage<M extends ModelNames>({model_name}: CreatePageProps<M>) {
     const modelInfo:ModelInfo = models[model_name]
 
     return (

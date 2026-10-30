@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import type { ModelNames, ReadResponse_Shallow, UserWrite } from '../utils/models'
+import type { ModelNames, ReadResponse_Shallow } from '../utils/models'
 import { ListRequest } from '../utils/apiRequests';
 import { useNavigate } from "react-router";
+import ListItem from '../ui_components/ListItem';
 
 type ListPageProps<M extends ModelNames> = {
     model_name: M;
@@ -32,10 +33,21 @@ function ListPage<M extends ModelNames>({model_name}:ListPageProps<M>) {
                 title = object.username
             else
                 throw new Error(`[ListPage.tsx] Object is of improper type! It should have a name or username variable but neither were found. type: ${typeof object} Object: ${object}`);
-                
             
-            return <button type="button" className="btn btn-primary" onClick={() => {
-                navigate(`/read/${model_name}`);}}> {title} </button>
+            let description = ""
+            if("description" in object)
+            {
+                if(object.description)
+                {
+                    if(object.description.length > 0)
+                    {
+                        description = object.description
+                    }
+                }
+            }
+            return <ListItem title={title} id={object.id} description={description} onRead={() => {navigate(`/read/${model_name}/${object.id}`);}} onEdit={() => {navigate(`/update/${model_name}/${object.id}`);}} onDelete={() => {navigate(`/delete/${model_name}/${object.id}`)}} key={title.concat(object.id)}/>
+            
+            
             })}
         <div>
             <button type="button" className="btn-subtle theme-secondary m-5 p-1 w-25" onClick={() => {navigate(`/create/${model_name}`);}}> Create new {model_name} </button>

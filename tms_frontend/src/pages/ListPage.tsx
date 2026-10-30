@@ -37,6 +37,9 @@ function ListPage<M extends ModelNames>({model_name}:ListPageProps<M>) {
             return <button type="button" className="btn btn-primary" onClick={() => {
                 navigate(`/read/${model_name}`);}}> {title} </button>
             })}
+        <div>
+            <button type="button" className="btn-subtle theme-secondary m-5 p-1 w-25" onClick={() => {navigate(`/create/${model_name}`);}}> Create new {model_name} </button>
+        </div>
     </>
     )
 }

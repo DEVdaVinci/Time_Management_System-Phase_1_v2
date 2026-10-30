@@ -8,10 +8,11 @@ type FormWidgetProps<M extends ModelNames> = {
     model_name: M,
     form: FormConfig,
     changeObject: Function,
+    handleSubmit: () => void,
     object: WriteRequest<M>,
 }
 
-function FormWidget<M extends ModelNames>({model_name, form, changeObject, object}: FormWidgetProps<M>) {
+function FormWidget<M extends ModelNames>({model_name, form, changeObject, handleSubmit, object}: FormWidgetProps<M>) {
 
   type ObjectsMap = 
   {
@@ -63,7 +64,7 @@ function FormWidget<M extends ModelNames>({model_name, form, changeObject, objec
             </div>
             )
         })}
-        <button type="submit" className="btn btn-primary mb-2">Submit</button>
+        <button type="submit" className="btn btn-primary mb-2" onClick={(event) => {event.preventDefault(); handleSubmit();}}>Submit</button>
       </form>
     </>
   )
